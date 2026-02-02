@@ -10,6 +10,7 @@ import CancellationConfEmail from "@/emails/cancellation-conf-email";
 import TutorSessionConfEmail from "@/emails/tutor-session-conf-email";
 import TutorSessionCancelEmail from "@/emails/tutor-session-cancel-email";
 import {Resend} from "resend";
+import {bookingsTotal} from "@/lib/metrics";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -121,6 +122,10 @@ export const bookSession = async (data: TutoringSession) => {
         studentId: userId,
       })
       .returning();
+
+    // collect metrics
+    bookingsTotal.inc({status: "booked", type: data.sessionType})
+    console.log("bookings_total INCREMENTED")
 
     const sessionId = response[0].id;
 
