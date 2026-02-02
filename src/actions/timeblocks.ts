@@ -10,7 +10,7 @@ import CancellationConfEmail from "@/emails/cancellation-conf-email";
 import TutorSessionConfEmail from "@/emails/tutor-session-conf-email";
 import TutorSessionCancelEmail from "@/emails/tutor-session-cancel-email";
 import {Resend} from "resend";
-import {bookingsTotal} from "@/lib/metrics";
+import {bookingsRevenue, bookingsTotal, emailDuration, emailErrors, emailsSent} from "@/lib/metrics";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -125,7 +125,8 @@ export const bookSession = async (data: TutoringSession) => {
 
     // collect metrics
     bookingsTotal.inc({status: "booked", type: data.sessionType})
-    console.log("bookings_total INCREMENTED")
+    console.log(`bookings_total INCREMENTED: {status: "booked", type: ${data.sessionType}}`)
+    bookingsRevenue.labels({type: data.sessionType}).inc(tutor.level === "junior" ? (data.duration === 45 ? 15 : 20) : (data.duration === 45 ? 17 : 22))
 
     const sessionId = response[0].id;
 
@@ -141,6 +142,7 @@ export const bookSession = async (data: TutoringSession) => {
       tutor.name
     );
 
+    const emailTimer = emailDuration.startTimer({template: "booking_confirmation"})
     // Send confirmation email to student
     const { error: emailError } = await resend.emails.send({
       from: "Slovenščina Korak za Korakom <notifications@slovenscinakzk.com>",
@@ -163,12 +165,16 @@ export const bookSession = async (data: TutoringSession) => {
         },
       ],
     });
+    emailTimer()
 
     if (emailError) {
+      emailErrors.labels({ template: "booking_confirmation" }).inc();
       console.error("Error sending confirmation email to student:", emailError);
       // Don't return error here - the session is already booked
       // Just log the error and continue
     }
+    emailsSent.labels({ template: "booking_confirmation" }).inc();
+
 
     // Send confirmation email to tutor
     const studentName = user.firstName && user.lastName
@@ -176,6 +182,8 @@ export const bookSession = async (data: TutoringSession) => {
       : user.firstName || "Student";
     const studentEmail = user.emailAddresses[0].emailAddress;
     const tutorLocale = "en"; // Default to English for tutors
+
+    const emailTimer2 = emailDuration.startTimer({template: "tutor_booking_confirmation"})
 
     const { error: tutorEmailError } = await resend.emails.send({
       from: "Slovenščina Korak za Korakom <notifications@slovenscinakzk.com>",
@@ -194,12 +202,16 @@ export const bookSession = async (data: TutoringSession) => {
         sessionNotes: undefined,
       }),
     });
+    emailTimer2()
 
     if (tutorEmailError) {
+      emailErrors.labels({ template: "tutor_booking_confirmation" }).inc();
       console.error("Error sending confirmation email to tutor:", tutorEmailError);
       // Don't return error here - the session is already booked
       // Just log the error and continue
     }
+
+    emailsSent.labels({ template: "tutor_booking_confirmation" }).inc();
 
     return {
       message: "Session booked successfully",
@@ -269,6 +281,12 @@ export const cancelSession = async (sessionId: number) => {
       })
       .where(eq(timeblocksTable.id, sessionId));
 
+
+    bookingsTotal.inc({status: "cancelled", type: session.sessionType})
+    console.log(`bookings_total INCREMENTED: {status: "cancelled", type: ${session.sessionType}}`)
+
+    const emailTimer = emailDuration.startTimer({template: "cancellation_confirmation"});
+
     // Send cancellation confirmation email to student
     const { error: emailError } = await resend.emails.send({
       from: "Slovenščina Korak za Korakom <notifications@slovenscinakzk.com>",
@@ -286,17 +304,24 @@ export const cancelSession = async (sessionId: number) => {
       }),
     });
 
+    emailTimer()
+
     if (emailError) {
+      emailErrors.labels({ template: "cancellation_confirmation" }).inc();
       console.error("Error sending cancellation email to student:", emailError);
       // Don't return error here - the session is already cancelled
       // Just log the error and continue
     }
+
+    emailsSent.labels({ template: "cancellation_confirmation" }).inc();
 
     // Send cancellation notification email to tutor
     const studentName = user.firstName && user.lastName
       ? `${user.firstName} ${user.lastName}`
       : user.firstName || "Student";
     const tutorLocale = "en"; // Default to English for tutors
+
+    const emailTimer2 = emailDuration.startTimer({template: "tutor_cancellation_confirmation"});
 
     const { error: tutorEmailError } = await resend.emails.send({
       from: "Slovenščina Korak za Korakom <notifications@slovenscinakzk.com>",
@@ -314,11 +339,16 @@ export const cancelSession = async (sessionId: number) => {
       }),
     });
 
+    emailTimer2()
+
     if (tutorEmailError) {
+      emailErrors.labels({ template: "tutor_cancellation_confirmation" }).inc();
       console.error("Error sending cancellation email to tutor:", tutorEmailError);
       // Don't return error here - the session is already cancelled
       // Just log the error and continue
     }
+
+    emailsSent.labels({ template: "tutor_cancellation_confirmation" }).inc();
 
     return {
       message: "Session cancelled successfully",

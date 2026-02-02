@@ -8,6 +8,7 @@ import BookingConfEmail from "@/emails/booking-conf-email";
 import RescheduleConfEmail from "@/emails/reschedule-conf-email";
 import CancellationConfEmail from "@/emails/cancellation-conf-email";
 import { Resend } from "resend";
+import {bookingsRevenue, bookingsTotal, emailDuration, emailErrors, emailsSent} from "@/lib/metrics";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -98,6 +99,11 @@ export const bookEventDirect = async (eventId: string) => {
       event.theme
     );
 
+    bookingsTotal.inc({status: "booked", type: "language_club"})
+    console.log('bookings_total INCREMENTED: {status: "booked", type: "language_club"}')
+
+    const emailTimer = emailDuration.startTimer({template: "lang_club_booking_confirmation"})
+
     // Send email confirmation
     const { data: emailData, error: emailError } = await resend.emails.send({
       from: "Slovenščina Korak za Korakom <notifications@slovenscinakzk.com>",
@@ -123,9 +129,14 @@ export const bookEventDirect = async (eventId: string) => {
       ],
     });
 
+    emailTimer()
+
     if (emailError) {
+      emailErrors.labels({ template: "lang_club_booking_confirmation" }).inc();
       return { error: "Email could not be send" };
     }
+    emailsSent.labels({ template: "lang_club_booking_confirmation" }).inc();
+    bookingsRevenue.labels({type: "language_club"}).inc(12.5)
 
     return {
       success: true,
@@ -358,6 +369,8 @@ export const rescheduleBooking = async (
       newEvent.theme
     );
 
+    const emailTimer = emailDuration.startTimer({template: "reschedule_confirmation"})
+
     // Send a reschedule confirmation email
     const { data: emailData, error: emailError } = await resend.emails.send({
       from: "Slovenščina Korak za Korakom <notifications@slovenscinakzk.com>",
@@ -392,11 +405,16 @@ export const rescheduleBooking = async (
       ],
     });
 
+    emailTimer();
+
     if (emailError) {
+      emailErrors.labels({template: "reschedule_confirmation"}).inc();
       console.error("Error sending reschedule email:", emailError);
       // Don't return error here - the booking is already updated
       // Just log the error and continue
     }
+
+    emailsSent.labels({ template: "reschedule_confirmation" }).inc();
 
     return {
       success: true,
@@ -559,6 +577,11 @@ export const cancelBooking = async (bookingId: number) => {
         })
         .where(eq(langClubTable.id, booking.eventId));
 
+      bookingsTotal.inc({status: "cancelled", type: "language_club"})
+      console.log('bookings_total INCREMENTED: {status: "cancelled", type: "language_club"}')
+
+
+      const emailTimer = emailDuration.startTimer({template: "cancellation_confirmation"})
       // Send cancellation confirmation email
       const { error: emailError } = await resend.emails.send({
         from: "Slovenščina Korak za Korakom <notifications@slovenscinakzk.com>",
@@ -578,11 +601,16 @@ export const cancelBooking = async (bookingId: number) => {
         }),
       });
 
+      emailTimer();
+
       if (emailError) {
+        emailErrors.labels({ template: "cancellation_confirmation" }).inc();
         console.error("Error sending cancellation email:", emailError);
         // Don't return error here - the booking is already cancelled
         // Just log the error and continue
       }
+
+      emailsSent.labels({ template: "cancellation_confirmation" }).inc();
 
       return {
         status: 200,

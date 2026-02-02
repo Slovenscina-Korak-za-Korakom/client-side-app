@@ -8,49 +8,9 @@ import {addMonths, addWeeks, format, isAfter, isBefore, setDay, startOfDay} from
 import {fromZonedTime} from "date-fns-tz";
 import {Resend} from "resend";
 import TutorSessionCancelEmail from "@/emails/tutor-session-cancel-email";
+import {RegularInvitation, CancelledSession, RegularSession} from "@/types/interfaces";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-export interface RegularSession {
-  id: string;
-  invitationId: number;
-  tutorId: number;
-  startTime: Date;
-  duration: number;
-  status: "booked";
-  sessionType: string;
-  location: string;
-  studentId: string;
-  tutorName: string;
-  tutorAvatar: string;
-  tutorColor: string;
-  description: string | null;
-  isRecurring: true;
-  dayOfWeek: number;
-}
-
-interface RegularInvitation {
-  id: number;
-  tutorId: number;
-  studentClerkId: string | null;
-  status: string;
-  dayOfWeek: number;
-  startTime: string;
-  duration: number;
-  location: string;
-  description: string | null;
-  color: string | null;
-  tutorName: string;
-  tutorAvatar: string;
-  tutorColor: string;
-}
-
-export interface CancelledSession {
-  id: number;
-  invitationId: number;
-  cancelledDate: Date;
-  reason: string | null;
-}
 
 /**
  * Fetches all accepted regular invitations for the current user
@@ -85,32 +45,6 @@ export async function getRegularInvitations(): Promise<RegularInvitation[]> {
         eq(regularInvitationsTable.status, "accepted")
       )
     )
-    .innerJoin(tutorsTable, eq(regularInvitationsTable.tutorId, tutorsTable.id));
-}
-
-/**
- * Fetches ALL accepted regular invitations (from all students) for blocking time slots
- * This ensures regular sessions are not available for booking by anyone
- */
-export async function getAllAcceptedRegularInvitations(): Promise<RegularInvitation[]> {
-  return db
-    .select({
-      id: regularInvitationsTable.id,
-      tutorId: regularInvitationsTable.tutorId,
-      studentClerkId: regularInvitationsTable.studentClerkId,
-      status: regularInvitationsTable.status,
-      dayOfWeek: regularInvitationsTable.dayOfWeek,
-      startTime: regularInvitationsTable.startTime,
-      duration: regularInvitationsTable.duration,
-      location: regularInvitationsTable.location,
-      description: regularInvitationsTable.description,
-      color: regularInvitationsTable.color,
-      tutorName: tutorsTable.name,
-      tutorAvatar: tutorsTable.avatar,
-      tutorColor: tutorsTable.color,
-    })
-    .from(regularInvitationsTable)
-    .where(eq(regularInvitationsTable.status, "accepted"))
     .innerJoin(tutorsTable, eq(regularInvitationsTable.tutorId, tutorsTable.id));
 }
 

@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import { collectDefaultMetrics, register } from "prom-client";
-
-// Collect default Node.js metrics (CPU, memory, event loop, etc.)
-collectDefaultMetrics({ register });
+import { register } from "@/lib/metrics";
 
 export async function GET() {
   const metrics = await register.metrics();

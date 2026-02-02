@@ -132,3 +132,47 @@ export interface Event {
   price: number;
 }
 
+
+// actions/regulars.ts
+export interface RegularSession {
+  id: string;
+  invitationId: number;
+  tutorId: number;
+  startTime: Date;
+  duration: number;
+  status: "booked";
+  sessionType: string;
+  location: string;
+  studentId: string;
+  tutorName: string;
+  tutorAvatar: string;
+  tutorColor: string;
+  description: string | null;
+  isRecurring: true;
+  dayOfWeek: number;
+}
+
+export interface RegularInvitation {
+  id: number;
+  tutorId: number;
+  studentClerkId: string | null;
+  status: string;
+  dayOfWeek: number;
+  startTime: string;
+  duration: number;
+  location: string;
+  description: string | null;
+  color: string | null;
+  tutorName: string;
+  tutorAvatar: string;
+  tutorColor: string;
+}
+
+export interface CancelledSession {
+  id: number;
+  invitationId: number;
+  cancelledDate: Date;
+  reason: string | null;
+}
+
+
