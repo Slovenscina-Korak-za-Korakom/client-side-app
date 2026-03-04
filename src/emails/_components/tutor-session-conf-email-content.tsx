@@ -7,7 +7,7 @@ import {
   Heading,
   Text,
   Link,
-  Button,
+  // Button,
 } from "@react-email/components";
 import { toZonedTime } from "date-fns-tz";
 import React from "react";
@@ -137,11 +137,11 @@ const getEmailTranslations = (locale: string) => {
 };
 
 const TutorSessionConfEmailContent = ({
-  tutorName,
+  // tutorName,
   locale,
   studentName,
   studentEmail,
-  studentBookingCount,
+  // studentBookingCount,
   sessionDate,
   sessionDuration,
   sessionType,
@@ -372,7 +372,8 @@ const TutorSessionConfEmailContent = ({
                       margin: "0",
                     }}
                   >
-                    {studentBookingCount === 0 ? (
+                    Coming Soon
+                    {/*{studentBookingCount === 0 ? (
                       <span
                         style={{
                           display: "inline-block",
@@ -387,7 +388,7 @@ const TutorSessionConfEmailContent = ({
                       </span>
                     ) : (
                       `${studentBookingCount} ${t.previousBookings}`
-                    )}
+                    )}*/}
                   </Text>
                 </Column>
               </Row>
@@ -579,116 +580,6 @@ const TutorSessionConfEmailContent = ({
                 </Row>
               )}
             </Section>
-          </Section>
-
-          {/* Action Buttons */}
-          <Section style={{ marginBottom: "32px" }}>
-            <Heading
-              as="h3"
-              style={{
-                fontSize: "18px",
-                lineHeight: "28px",
-                fontWeight: "600",
-                color: "#111827",
-                margin: "0 0 16px 0",
-              }}
-            >
-              {t.actions}
-            </Heading>
-            <Row>
-              <Column align="center">
-                <Button
-                  href={`https://www.slovenscinakzk.com/${locale}/dashboard`}
-                  style={{
-                    backgroundColor: "#A855F7",
-                    color: "#ffffff",
-                    padding: "12px 24px",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    fontWeight: "600",
-                    fontSize: "14px",
-                    display: "inline-block",
-                    marginBottom: "12px",
-                  }}
-                >
-                  {t.viewAllBookings}
-                </Button>
-              </Column>
-            </Row>
-            <Row>
-              <Column align="center">
-                <Button
-                  href={`https://www.slovenscinakzk.com/${locale}/calendar`}
-                  style={{
-                    backgroundColor: "#6089CB",
-                    color: "#ffffff",
-                    padding: "12px 24px",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    fontWeight: "600",
-                    fontSize: "14px",
-                    display: "inline-block",
-                  }}
-                >
-                  {t.manageCalendar}
-                </Button>
-              </Column>
-            </Row>
-          </Section>
-
-          {/* Preparation Tip */}
-          <Section
-            style={{
-              backgroundColor: "#FEF3C7",
-              borderRadius: "12px",
-              padding: "20px",
-              marginBottom: "32px",
-              border: "1px solid #FDE68A",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: "14px",
-                lineHeight: "20px",
-                color: "#92400E",
-                fontWeight: "600",
-                marginBottom: "8px",
-              }}
-            >
-              💡 {t.preparationTip}
-            </Text>
-            <Text
-              style={{
-                fontSize: "14px",
-                lineHeight: "20px",
-                color: "#92400E",
-                margin: "0",
-              }}
-            >
-              {t.preparationText}
-            </Text>
-          </Section>
-
-          {/* Personal Message */}
-          <Section
-            style={{
-              textAlign: "center",
-              marginTop: "40px",
-              paddingTop: "32px",
-              borderTop: "1px solid #F3F4F6",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: "17px",
-                lineHeight: "28px",
-                color: "#374151",
-                fontWeight: "500",
-                margin: "0",
-              }}
-            >
-              {t.lookingForward}, {tutorName}!
-            </Text>
           </Section>
         </Container>
 
