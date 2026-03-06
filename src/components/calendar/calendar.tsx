@@ -15,8 +15,6 @@ import { NoSlotsOverlay } from "@/components/calendar/no-slots-overlay";
 import "@/components/calendar/calendar-styles.css";
 import {useLocale, useTranslations} from "next-intl";
 import {useSidebar} from "@/components/ui/sidebar";
-import {fromZonedTime} from "date-fns-tz";
-
 // Transform database tutors to the format expected by the calendar
 const transformTutors = (tutorsData: TutorData[]) => {
   return tutorsData.map((tutor) => ({
@@ -38,6 +36,8 @@ const generateAvailableSlots = (
 ) => {
   const availableSlots: TutoringSession[] = [];
   const now = new Date();
+  // Work in UTC to match DB-stored UTC times
+  const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 
   schedulesData.forEach((schedule) => {
     const tutor = tutorsData.find((t) => t.clerkId === schedule.ownerId);
@@ -49,17 +49,14 @@ const generateAvailableSlots = (
           ? JSON.parse(schedule.schedule)
           : schedule.schedule;
 
-      // Get the day of the week for the current date (0 = Sunday, 1 = Monday, etc.)
-      let dayOfTheWeek = new Date(now).getDay();
+      // Get the day of the week for today in UTC (0 = Sunday, 1 = Monday, etc.)
+      let dayOfTheWeek = todayUTC.getUTCDay();
 
       // Generate slots for each day of the week for the next 4 weeks
       for (let week = 0; week < 4; week++) {
         for (let day = 0; day < 7; day++) {
-          const currentDate = new Date(now);
-          currentDate.setDate(currentDate.getDate() + week * 7 + day);
-
-          // Skip past dates
-          if (currentDate < now) continue;
+          const currentDate = new Date(todayUTC);
+          currentDate.setUTCDate(currentDate.getUTCDate() + week * 7 + day);
 
           // Find the schedule for this day (0 = Sunday, 1 = Monday, etc.)
           const daySchedule = scheduleData.find(
@@ -76,13 +73,12 @@ const generateAvailableSlots = (
               // Skip "regular" session types - they are handled separately and never bookable
               if (timeSlot.sessionType === "regulars") return;
 
-              // Create the datetime string and interpret it as CET timezone
-              const year = currentDate.getFullYear();
-              const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-              const dayNum = String(currentDate.getDate()).padStart(2, '0');
-              const dateTimeStr = `${year}-${month}-${dayNum} ${timeSlot.startTime}:00`;
-              // fromZonedTime converts a "local" time in a specific timezone to UTC
-              const slotStart = fromZonedTime(dateTimeStr, 'Europe/Ljubljana');
+              // Create the datetime as UTC (DB stores times as UTC)
+              const year = currentDate.getUTCFullYear();
+              const month = String(currentDate.getUTCMonth() + 1).padStart(2, '0');
+              const dayNum = String(currentDate.getUTCDate()).padStart(2, '0');
+
+              const slotStart = new Date(`${year}-${month}-${dayNum}T${timeSlot.startTime}:00Z`);
 
               const slotEnd = new Date(
                 slotStart.getTime() + timeSlot.duration * 60000,
