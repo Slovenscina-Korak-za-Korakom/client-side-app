@@ -67,7 +67,7 @@ export const TutorAvatars: React.FC<TutorAvatarsProps> = ({
               </AvatarFallback>
             </Avatar>
             <span className={cn(
-              "hidden lg:block text-sm text-muted-foreground text-center truncate",
+              "hidden capitalize lg:block text-sm text-muted-foreground text-center truncate",
               selectedTutorId === tutor.id && !disabled && "text-indigo-500 font-semibold"
             )}>
               {tutor.name.split(" ")[0]}
@@ -81,7 +81,7 @@ export const TutorAvatars: React.FC<TutorAvatarsProps> = ({
             <div style={{
               translate: isMobile ? (-index*10).toString()+"px": "none",
             }} className={cn(
-              "lg:hidden text-xs whitespace-nowrap text-indigo-500 absolute -bottom-8 opacity-0 transition-opacity duration-300",
+              "lg:hidden capitalize text-xs whitespace-nowrap text-indigo-500 absolute -bottom-8 opacity-0 transition-opacity duration-300",
               selectedTutorId === tutor.id && !disabled && "opacity-100",
               // Position from right for last 2 tutors to prevent overflow off screen
               index >= tutors.length - 2 ? "right-0" : "left-0"

@@ -146,7 +146,7 @@ export const placementQuestions: PlacementQuestion[] = [
     id: 12,
     level: "B1",
     question:
-      "Preberi članek:\n»Po raziskavi Slovenci največ časa porabijo za delo, nato za gledanje televizije. Na tretjem mestu je druženje s prijatelji.«\nKaj je na drugem mestu?",
+      "Preberi stavek:\n»Po raziskavi Slovenci največ časa porabijo za delo, nato za gledanje televizije. Na tretjem mestu je druženje s prijatelji.«\nKaj je na drugem mestu?",
     options: [
       { id: "a", text: "Branje knjig." },
       { id: "b", text: "Gledanje televizije." },

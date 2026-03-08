@@ -11,7 +11,7 @@ export const SettingTabs = () => {
   return (
   <Tabs defaultValue="account" className="w-full">
     <div className="flex justify-center items-center">
-      <TabsList>
+      <TabsList className="hidden">
         <TabsTrigger
           value="account"
           className="data-[state=active]:bg-white"
@@ -45,6 +45,9 @@ export const SettingTabs = () => {
     </TabsContent>
     <TabsContent className="w-full" value="billing">
       Change your billing address here.
+    </TabsContent>
+    <TabsContent className="w-full" value="notification">
+      Manage notifications
     </TabsContent>
   </Tabs>
   );

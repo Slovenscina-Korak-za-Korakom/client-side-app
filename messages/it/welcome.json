@@ -32,7 +32,8 @@
     "par2": {
       "title": "Scegli il tuo insegnante preferito",
       "description": "Seleziona un insegnante che corrisponda ai tuoi obiettivi di apprendimento e stile.",
-      "info-message": "Puoi cambiare il tuo insegnante in seguito."
+      "info-message": "Puoi cambiare il tuo insegnante in seguito.",
+      "view-bio": "Leggi la bio"
     },
     "par3": {
       "title": "Quali sono i tuoi obiettivi di apprendimento?",

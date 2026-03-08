@@ -32,7 +32,8 @@
     "par2": {
       "title": "Choose your preferred tutor",
       "description": "Select a tutor that matches your learning goals and style.",
-      "info-message": "You can change your tutor later."
+      "info-message": "You can change your tutor later.",
+      "view-bio": "View bio"
     },
     "par3": {
       "title": "What are your learning goals?",

@@ -32,7 +32,8 @@
     "par2": {
       "title": "Izberite svojega učitelja",
       "description": "Izberite učitelja, ki ustreza vašim ciljem in stilu učenja.",
-      "info-message": "Tutorja lahko spremenite kasneje."
+      "info-message": "Tutorja lahko spremenite kasneje.",
+      "view-bio": "Preberi biografijo"
     },
     "par3": {
       "title": "Kakšni so vaši cilji učenja?",

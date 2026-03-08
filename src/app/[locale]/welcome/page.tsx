@@ -10,6 +10,7 @@ import {
   IconInfoCircle,
   IconLoader2,
   IconUser,
+  IconX,
 } from "@tabler/icons-react";
 import {redirect} from "@/i18n/routing";
 import {useLocale, useTranslations} from "next-intl";
@@ -19,6 +20,12 @@ import {toast} from "sonner";
 import {learningGoals, tutors,} from "@/lib/docs";
 import {clearPlacementTestState, PlacementTest} from "@/components/welcome/PlacementTest";
 import {cn} from "@/lib/utils";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const WelcomePage = () => {
   const {user, isLoaded} = useUser();
@@ -33,6 +40,7 @@ const WelcomePage = () => {
     preferredSchedule: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bioDialogTutor, setBioDialogTutor] = useState<typeof tutors[0] | null>(null);
 
   const totalSteps = 3;
 
@@ -145,7 +153,7 @@ const WelcomePage = () => {
                       key={tutor.id}
                       onClick={() => handlePreferenceChange("preferredTutor", tutor.id)}
                       className={cn(
-                        "relative w-full p-6 rounded-xl border transition-all duration-200",
+                        "relative w-full p-6 rounded-xl border cursor-pointer transition-all duration-200",
                         "hover:border-foreground/20 hover:bg-foreground/[0.02]",
                         "dark:hover:bg-foreground/[0.05] text-left",
                         isSelected
@@ -180,9 +188,23 @@ const WelcomePage = () => {
 
                         {/* Selection Indicator */}
                         {isSelected && (
-                          <div className="absolute top-5 right-5">
-                            <IconCheck className="h-5 w-5 text-primary"/>
+                          <div className="absolute top-3 left-3 flex items-center justify-center w-6 h-6 rounded-full bg-primary">
+                            <IconCheck className="h-3.5 w-3.5 text-white"/>
                           </div>
+                        )}
+
+                        {/* View Bio Icon */}
+                        {tutor.bio && tutor.bio !== "No bio" && (
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setBioDialogTutor(tutor);
+                            }}
+                            aria-label={t("par2.view-bio")}
+                            className="absolute cursor-pointer top-3 right-3 flex items-center justify-center w-7 h-7 rounded-full bg-foreground/5 hover:bg-foreground/10 dark:bg-white/5 dark:hover:bg-white/10 transition-colors"
+                          >
+                            <IconInfoCircle className="h-4 w-4 text-muted-foreground"/>
+                          </span>
                         )}
                       </div>
                     </button>
@@ -361,6 +383,48 @@ const WelcomePage = () => {
           </div>
         )}
       </div>
+
+      {/* Tutor Bio Dialog */}
+      <Dialog open={!!bioDialogTutor} onOpenChange={(open) => !open && setBioDialogTutor(null)}>
+        <DialogContent showCloseButton={false} className="max-w-md p-0 rounded-2xl gap-0 overflow-hidden max-h-[90vh] flex flex-col">
+          {/* Gradient header */}
+          <div className="relative h-28 bg-gradient-to-br from-primary/30 via-primary/10 to-transparent shrink-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/60"/>
+            <DialogClose asChild>
+              <button className="absolute top-3 right-3 flex items-center justify-center w-8 h-8 rounded-full bg-background/60 hover:bg-background/80 backdrop-blur-sm transition-colors border border-border/30">
+                <IconX className="h-3.5 w-3.5 text-foreground/70"/>
+              </button>
+            </DialogClose>
+          </div>
+
+          {/* Profile body — avatar overlaps header via negative margin */}
+          <div className="flex flex-col items-center text-center px-6 pb-6 -mt-14 overflow-y-auto">
+            <Avatar className="w-24 h-24 ring-4 ring-background shadow-md shrink-0">
+              <AvatarImage className="object-cover" src={bioDialogTutor?.avatar} alt={bioDialogTutor?.name}/>
+              <AvatarFallback className="bg-muted">
+                <IconUser className="h-10 w-10 text-foreground/30"/>
+              </AvatarFallback>
+            </Avatar>
+
+            <DialogTitle className="mt-3 text-lg font-bold tracking-tight">
+              {bioDialogTutor?.name}
+            </DialogTitle>
+            {bioDialogTutor && (
+              <p className="text-xs font-medium text-primary mt-0.5 uppercase tracking-wider">
+                {bioDialogTutor.description[locale as keyof typeof bioDialogTutor.description]}
+              </p>
+            )}
+
+            <div className="w-full h-px bg-border/60 my-4"/>
+
+            <div className="w-full text-left">
+              <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
+                {bioDialogTutor?.bio}
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
