@@ -7,7 +7,7 @@ import {Metadata} from "next";
 export const metadata : Metadata = {
   title: {
     default: "Slovenscina Korak za Korakom | Become fluent in Slovene",
-    template: "%s | Slovene Step By Step",
+    template: "%s | Slovenscina Korak za Korakom",
   },
   description:
     "Slovenscina Korak za Korakom personalized Slovene lessons tailored to your goals. Learn online at your convenience with experienced teachers and join a supportive community of over 1,200 members. Start today and achieve your language goals with Slovenscina Korak za Korakom!",
