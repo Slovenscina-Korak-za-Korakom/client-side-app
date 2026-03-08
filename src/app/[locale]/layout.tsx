@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "sonner";
 import { WelcomeRedirectProvider } from "@/components/providers/welcome-redirect-provider";
 import { Analytics } from "@vercel/analytics/next";
-import HreflangLinks from "@/components/seo/hreflang-links";
+
 import { Manrope } from "next/font/google";
 import localFont from "next/font/local";
 
@@ -45,10 +45,6 @@ export default async function LocaleLayout({ children, params }) {
 
   return (
     <html lang={locale} suppressHydrationWarning className={`${manropeFont.variable} ${tankerFont.variable}`}>
-      <head>
-        <HreflangLinks />
-        <title></title>
-      </head>
       <body className={"font-manrope font-medium"}>
         <Toaster richColors position="bottom-right" />
         <NextIntlClientProvider messages={messages}>

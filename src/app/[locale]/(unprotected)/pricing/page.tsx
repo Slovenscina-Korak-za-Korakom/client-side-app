@@ -5,6 +5,7 @@ import LanguageClub from "@/components/content/language-club-pricing";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import {Metadata} from "next";
+import { getAlternates } from "@/lib/seo";
 
 export async function generateMetadata({ params }): Promise<Metadata> {
   const { locale } = await params;
@@ -12,6 +13,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
   return {
     title: t("title"),
     description: t("description"),
+    alternates: getAlternates("/pricing", locale),
   };
 }
 

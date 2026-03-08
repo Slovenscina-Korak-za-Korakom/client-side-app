@@ -1,12 +1,13 @@
 import "../legal.css";
 import {Metadata} from "next";
+import { getAlternates } from "@/lib/seo";
 
-export async function generateMetadata(): Promise<Metadata> {
-  // const { locale } = await params
-  // const t = await getTranslations({ locale, namespace: "Metadata" });
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const { locale } = await params;
   return {
     title: "Terms of Service",
-    description: "Terms of Service",
+    description: "Terms of Service for Slovene Step by Step. Read our policies governing use of our language learning platform.",
+    alternates: getAlternates("/legal/terms-of-service", locale),
   };
 }
 

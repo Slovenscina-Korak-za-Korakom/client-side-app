@@ -7,6 +7,7 @@ import { reviews } from "@/lib/docs";
 import SectionTitle from "@/components/content/titles/section-title";
 import BentoGridWrapper from "@/components/content/bento-grid-wrapper";
 import {Metadata} from "next";
+import { getAlternates } from "@/lib/seo";
 
 export async function generateMetadata({ params }): Promise<Metadata> {
   const { locale } = await params;
@@ -14,6 +15,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
   return {
     title: t("title"),
     description: t("description"),
+    alternates: getAlternates("/", locale),
   };
 }
 

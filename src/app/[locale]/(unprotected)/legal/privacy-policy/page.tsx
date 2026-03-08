@@ -1,12 +1,13 @@
 import "../legal.css";
 import {Metadata} from "next";
+import { getAlternates } from "@/lib/seo";
 
-export async function generateMetadata() : Promise<Metadata> {
-  // const { locale } = await params;
-  // const t = await getTranslations({ locale, namespace: "Metadata" });
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const { locale } = await params;
   return {
     title: "Privacy Policy",
-    description: "Privacy Policy",
+    description: "Privacy Policy for Slovene Step by Step. Learn how we collect, use, and protect your personal data in compliance with GDPR.",
+    alternates: getAlternates("/legal/privacy-policy", locale),
   };
 }
 

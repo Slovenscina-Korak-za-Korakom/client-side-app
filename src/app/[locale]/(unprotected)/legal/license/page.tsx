@@ -1,12 +1,13 @@
 import "../legal.css";
 import {Metadata} from "next";
+import { getAlternates } from "@/lib/seo";
 
-export async function generateMetadata(): Promise<Metadata> {
-  // const { locale } = await params;
-  // const t = await getTranslations({ locale, namespace: "Metadata" });
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const { locale } = await params;
   return {
     title: "License Agreement",
-    description: "License Agreement",
+    description: "License Agreement for Slovene Step by Step. Understand your rights and obligations when using our platform and educational content.",
+    alternates: getAlternates("/legal/license", locale),
   };
 }
 

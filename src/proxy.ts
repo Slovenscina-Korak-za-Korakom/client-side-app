@@ -36,6 +36,6 @@ export const config = {
     "/api/:path*",
 
     // Match all other paths EXCEPT /sign-in and _next, assets etc.
-    "/((?!sign-in|_next/static|_next/image|images|assets|favicon.ico|sitemap.xml|auth/confirm|auth/callback|auth/update-password|.*\\.(?:svg|jpg|jpeg|png|gif|ico|xml)$).*)",
+    "/((?!sign-in|_next/static|_next/image|images|assets|favicon.ico|sitemap.xml|robots.txt|auth/confirm|auth/callback|auth/update-password|.*\\.(?:svg|jpg|jpeg|png|gif|ico|txt|xml)$).*)",
   ],
 };
